@@ -5,5 +5,5 @@ JTeeProxy is a simple TCP bridging software that allows you to transparently for
                                                 |
                                                 |---->> [SECONDARY-Server:Port]
 </pre>
-The responsed date from PRIMARY-Server can be logged by the JTeePoroxy-Process an will be forwarded the Client.
+The responsed data from PRIMARY-Server can be logged by the JTeePoroxy-Process an will be forwarded the Client.
 The responsed data from SECOONDARY-Server can be logged by the JTeeProxy-Process, but will not be forwared to the Client.
