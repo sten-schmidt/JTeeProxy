@@ -1,5 +1,5 @@
 # JTeeProxy
-JTeeProxy is a simple TCP bridging software that allows you to transparently forwarded a TCP port to an primary- and an secondary-host and port. Both hosts can be set to localhost for internal port redirection.
+JTeeProxy is a simple TCP bridging software that allows you to transparently forwarded a TCP port to a primary- and a secondary-host and port. Both hosts can be set to localhost for internal port redirection.
 <pre>
 [Client] <<----->> [JTeeProxy-Server:Port] 
                               | <<-------->> [PRIMARY-Server:Port]
