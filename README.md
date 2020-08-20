@@ -1,5 +1,5 @@
 # JTeeProxy
-JTeeProxy is a simple TCP bridging software that allows you to transparently forwarded a TCP port to a primary- and a secondary-host and port. Both hosts can be set to localhost for internal port redirection.
+JTeeProxy is a simple teeproxy implemented in Java. It allows you to transparently forwarded a TCP port to a primary- and a secondary host and port. Both hosts can be set to localhost for internal port redirection.
 <pre>
 [Client] <<----->> [JTeeProxy-Server:Port] 
                               | <<-------->> [PRIMARY-Server:Port]
@@ -12,7 +12,7 @@ The responsed data from SECONDARY-Server can be logged by the JTeeProxy-Process,
 
 ```powershell
 #Build
-mvn clean package
+.\build.ps1
 
 #Start Server A
 java -cp .\JTeeProxy.jar test.tools.EchoServer 6789 
