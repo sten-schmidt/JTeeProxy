@@ -1,5 +1,5 @@
 # JTeeProxy
-JTeeProxy is a simple teeproxy implemented in Java. It allows you to transparently forwarded a TCP port to a primary- and a secondary host and port. Both hosts can be set to localhost for internal port redirection.
+JTeeProxy is a simple teeproxy implemented in Java. It allows you to transparently forward a TCP port to a primary- and a secondary host and port. Both hosts can be set to localhost for internal port redirection.
 <pre>
 [Client] <<----->> [JTeeProxy-Server:Port] 
                               | <<-------->> [PRIMARY-Server:Port]
@@ -33,5 +33,5 @@ java -cp .\JTeeProxy.jar test.tools.EchoClient localhost 1234
 * secondary servers should be optional
 * error with secondary must not affect the connection with the primary server
 * Logging
-* HTTPS / SSL 
+* HTTPS / SSL Support
 * One primary server and a list of secondary servers
