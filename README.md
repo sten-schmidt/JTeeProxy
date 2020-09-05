@@ -15,16 +15,16 @@ The responsed data from SECONDARY-Server can be logged by the JTeeProxy-Process,
 .\build.ps1
 
 #Start Server A
-java -cp .\JTeeProxy.jar test.tools.EchoServer 6789 
+java -cp .\JTeeProxy.jar net.stenschmidt.jteeproxy.testtools.EchoServer 6789 
  
 #Start Server B
-java -cp .\JTeeProxy.jar test.tools.EchoServer 6790
+java -cp .\JTeeProxy.jar net.stenschmidt.jteeproxy.testtools.EchoServer 6790 
 
 #Start the Proxy
-java -cp .\JTeeProxy.jar net.stenschmidt.jteeproxy.JTeeProxy 1234 localhost 6789 localhost 6790
+java -cp .\JTeeProxy.jar net.stenschmidt.jteeproxy.JTeeProxy 1234 localhost 6789 localhost 6790 
 
 #Connect the Client to the Proxy
-java -cp .\JTeeProxy.jar test.tools.EchoClient localhost 1234
+java -cp .\JTeeProxy.jar net.stenschmidt.jteeproxy.testtools.EchoClient localhost 1234
 #Type some Text and press Enter
 ```
 
