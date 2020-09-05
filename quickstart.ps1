@@ -5,13 +5,13 @@ if (![System.IO.File]::Exists($jarFile)) {
     start powershell { 
         $host.ui.RawUI.WindowTitle = “Server A”
         Write-Host "Server A started. Exit with [Strg]+[C]"
-        java -cp .\JTeeProxy.jar test.tools.EchoServer 6789 
+        java -cp .\JTeeProxy.jar net.stenschmidt.jteeproxy.testtools.EchoServer 6789 
     }
 
     start powershell { 
         $host.ui.RawUI.WindowTitle = “Server B”
         Write-Host "Server B started. Exit with [Strg]+[C]"
-        java -cp .\JTeeProxy.jar test.tools.EchoServer 6790 
+        java -cp .\JTeeProxy.jar net.stenschmidt.jteeproxy.testtools.EchoServer 6790 
     }
 
     start powershell { 
@@ -23,6 +23,6 @@ if (![System.IO.File]::Exists($jarFile)) {
     start powershell { 
         $host.ui.RawUI.WindowTitle = “Echo Client”
         Write-Host "Client connected to JTeeProxy. Exit with [Strg]+[C]. Type some text and press [Enter]:"
-        java -cp .\JTeeProxy.jar test.tools.EchoClient localhost 1234
+        java -cp .\JTeeProxy.jar net.stenschmidt.jteeproxy.testtools.EchoClient localhost 1234
     }
 }

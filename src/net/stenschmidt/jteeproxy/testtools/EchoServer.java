@@ -1,4 +1,4 @@
-package test.tools;
+package net.stenschmidt.jteeproxy.testtools;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

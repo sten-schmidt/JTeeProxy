@@ -60,7 +60,8 @@ public class Client2ServerForwardThread extends Thread {
 		} catch (IOException e) {
 			System.out.println(String.format("Info (Client): connection is broken or was closed (%s)", e.toString()));
 		}
-
+		
+		
 		_parent.setConnectionErrorState();
 	}
 }

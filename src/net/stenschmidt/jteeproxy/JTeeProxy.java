@@ -31,6 +31,10 @@ public class JTeeProxy {
 			SECONDARY_DESTINATION_PORT = Integer.parseInt(args[4]);
 		}
 
+		startServer();
+	}
+	
+	public static void startServer() throws IOException {
 		try (ServerSocket serverSocket = new ServerSocket(SOURCE_PORT)) {
 			while (true) {
 				Socket clientSocket = serverSocket.accept();
