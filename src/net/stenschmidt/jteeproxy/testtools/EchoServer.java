@@ -1,11 +1,8 @@
 package net.stenschmidt.jteeproxy.testtools;
-import java.io.BufferedReader;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 
 public class EchoServer {
 	private int port;
@@ -18,32 +15,13 @@ public class EchoServer {
 
 	public void startServer() {
 		try (ServerSocket serverSocket = new ServerSocket(port, backlog)) {
-			System.out.println("EchoServer1 on " + serverSocket.getLocalSocketAddress() + " started ...");
-			process(serverSocket);
+			System.out.println("EchoServer on " + serverSocket.getLocalSocketAddress() + " started ...");
+			while (true) {
+				Socket socket = serverSocket.accept();
+				new EchoServerThread(socket).start();
+			}
 		} catch (IOException e) {
 			System.err.println(e);
-		}
-	}
-
-	private void process(ServerSocket server) throws IOException {
-		while (true) {
-			SocketAddress socketAddress = null;
-			try (Socket socket = server.accept();
-					BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-					PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
-				socketAddress = socket.getRemoteSocketAddress();
-				System.out.println("Connection to " + socketAddress + " established");
-				out.println("Server is ready ...");
-				String input;
-				while ((input = in.readLine()) != null) {
-					System.out.println("Input from Client: " + input);
-					out.println(input);
-				}
-			} catch (IOException e) {
-				System.err.println(e);
-			} finally {
-				System.out.println("Connection to " + socketAddress + " closed");
-			}
 		}
 	}
 
