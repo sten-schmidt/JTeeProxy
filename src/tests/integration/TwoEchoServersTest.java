@@ -1,7 +1,7 @@
 /**
  * 
  */
-package tests.echoserver;
+package tests.integration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,56 +61,75 @@ class TwoEchoServersTest {
 //			DRAFT FOR INTEGRATION TEST
 //			
 			
-//		    Runnable r1 = new Runnable() {
-//		        public void run() {
-//		        	EchoServer server1 = new EchoServer(6789, 50);
-//		        	server1.startServer();
-//		        }
-//		    };
-//		    new Thread(r1).start();
-//			
-//		    Runnable r2 = new Runnable() {
-//		        public void run() {
-//		        	EchoServer server2 = new EchoServer(6790, 50);
-//		        	server2.startServer();
-//		        }
-//		    };
-//		    new Thread(r2).start();
-//		    
-//		    Runnable r3 = new Runnable() {
-//		    	public void run() {
-//		    		JTeeProxy.SOURCE_PORT = 1234;
-//					JTeeProxy.PRIMARY_DESTINATION_HOST = "localhost";
-//					JTeeProxy.PRIMARY_DESTINATION_PORT = 6789;
-//					JTeeProxy.SECONDARY_DESTINATION_HOST = "localhost";
-//					JTeeProxy.SECONDARY_DESTINATION_PORT = 6790;
-//					try {
-//						JTeeProxy.startServer();
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//		    	}
-//		    };
-//		    new Thread(r3).start();
-//			
-//			Runnable r4 = new Runnable() {
-//				public void run() {
-//					String[] args = {"localhost", "1234"};
-//					EchoClient.main(args);
-//				}
-//			};
-//			new Thread(r4).start();
-//			
-//			
-//			TimeUnit.SECONDS.sleep(5);
-		    			
-			assertEquals(1, 1);
+		    Runnable r1 = new Runnable() {
+		        public void run() {
+	        		EchoServer server1 = new EchoServer(6789, 50);
+	        		server1.startServer();
+		        }
+		    };
+		    Thread t1 = new Thread(r1);
+		    t1.start();
+		      
+		    		
+		    Runnable r2 = new Runnable() {
+		        public void run() {
+		        	EchoServer server2 = new EchoServer(6790, 50);
+		        	server2.startServer();
+		        }
+		    };
+		    Thread t2 = new Thread(r2);
+		    t2.start();
+		    
+		    Runnable r3 = new Runnable() {
+		    	public void run() {
+		    		JTeeProxy.SOURCE_PORT = 1234;
+					JTeeProxy.PRIMARY_DESTINATION_HOST = "localhost";
+					JTeeProxy.PRIMARY_DESTINATION_PORT = 6789;
+					JTeeProxy.SECONDARY_DESTINATION_HOST = "localhost";
+					JTeeProxy.SECONDARY_DESTINATION_PORT = 6790;
+					try {
+						JTeeProxy.startServer();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+		    	}
+		    };
+		    Thread t3 = new Thread(r3);
+		    t3.start();
 			
+			Runnable r4 = new Runnable() {
+				public void run() {
+					String[] args = {"localhost", "1234"};
+					EchoClient.main(args);
+				}
+			};
+			Thread t4 = new Thread(r4);
+			t4.start();
+									
+		    for (int i = 0; i < 5; i++) {
+		    	System.out.println("Waiting " + (i+1));
+			    TimeUnit.SECONDS.sleep(1);
+			}
+		    
+		    //close client
+		    assertEquals(true, t4.isAlive());
+		    
+		    assertEquals(true, t1.isAlive());
+		    assertEquals(true, t2.isAlive());
+		    assertEquals(true, t3.isAlive());
+		    
+		    
+		    //TODO: Refactor
+		    t1.stop();
+		    t2.stop();
+		    t3.stop();
+		    t4.stop();
+		    		       	    
+		    
 		} catch (Exception e) {
 			fail(e.toString());
 		}
 
-		
 	}
 
 }
