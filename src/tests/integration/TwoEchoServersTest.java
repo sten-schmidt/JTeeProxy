@@ -36,6 +36,10 @@ class TwoEchoServersTest {
 	 */
 	@AfterAll
 	static void tearDownAfterClass() throws Exception {
+		for (int i = 0; i < 5; i++) {
+			System.out.println("Waiting " + (i + 1));
+			TimeUnit.SECONDS.sleep(1);
+		}
 	}
 
 	/**
@@ -111,9 +115,7 @@ class TwoEchoServersTest {
 			    TimeUnit.SECONDS.sleep(1);
 			}
 		    
-		    //close client
 		    assertEquals(true, t4.isAlive());
-		    
 		    assertEquals(true, t1.isAlive());
 		    assertEquals(true, t2.isAlive());
 		    assertEquals(true, t3.isAlive());
