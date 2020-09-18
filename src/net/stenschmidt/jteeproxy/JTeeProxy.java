@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import net.stenschmidt.jteeproxy.threading.ClientConnectionThread;
+import net.stenschmidt.jteeproxy.threading.ClientConnectionManager;
 
 public class JTeeProxy {
 	public static int SOURCE_PORT = 0;
@@ -36,12 +36,13 @@ public class JTeeProxy {
 	
 	public static void startServer() throws IOException {
 		try (ServerSocket serverSocket = new ServerSocket(SOURCE_PORT)) {
-			while (true) {
+			while (!Thread.currentThread().isInterrupted()) {
 				Socket clientSocket = serverSocket.accept();
-				ClientConnectionThread clientThread = new ClientConnectionThread(clientSocket, SOURCE_PORT,
+				ClientConnectionManager clientConnectionManager = new ClientConnectionManager(clientSocket, SOURCE_PORT,
 						new Destination(PRIMARY_DESTINATION_HOST, PRIMARY_DESTINATION_PORT),
 						new Destination(SECONDARY_DESTINATION_HOST, SECONDARY_DESTINATION_PORT));
-				clientThread.start();
+				Thread clientConnectionManagerThread = new Thread(clientConnectionManager, clientConnectionManager.getClass().getName());
+				clientConnectionManagerThread.start();
 			}
 		}
 	}

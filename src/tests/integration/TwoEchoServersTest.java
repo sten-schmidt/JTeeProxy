@@ -122,10 +122,10 @@ class TwoEchoServersTest {
 		    
 		    
 		    //TODO: Refactor
-		    t1.stop();
-		    t2.stop();
-		    t3.stop();
-		    t4.stop();
+		    t1.interrupt();
+		    t2.interrupt();
+		    t3.interrupt();
+		    t4.interrupt();
 		    		       	    
 		    
 		} catch (Exception e) {

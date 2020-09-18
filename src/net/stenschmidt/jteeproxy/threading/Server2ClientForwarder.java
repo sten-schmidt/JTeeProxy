@@ -6,11 +6,11 @@ import java.io.OutputStream;
 
 import net.stenschmidt.jteeproxy.ServerType;
 
-public class Server2ClientForwardThread extends Thread {
+public class Server2ClientForwarder implements Runnable {
 	private static final int BUFFER_SIZE = 8192;
 	InputStream _inputStreamServer;
 	OutputStream _outputStreamClient;
-	ClientConnectionThread _parent;
+	ClientConnectionManager _parent;
 	String _serverName;
 	ServerType _serverType;
 
@@ -22,7 +22,7 @@ public class Server2ClientForwardThread extends Thread {
 	 * @param inputStreamServer  Response-Stream form Server (primary)
 	 * @param outputStreamClient Client-OutputStream
 	 */
-	public Server2ClientForwardThread(ClientConnectionThread parent, InputStream inputStreamServer,
+	public Server2ClientForwarder(ClientConnectionManager parent, InputStream inputStreamServer,
 			OutputStream outputStreamClient, String serverName, ServerType serverType) {
 		_parent = parent;
 		_inputStreamServer = inputStreamServer;
@@ -35,7 +35,7 @@ public class Server2ClientForwardThread extends Thread {
 		byte[] buffer = new byte[BUFFER_SIZE];
 
 		try {
-			while (true) {
+			while (!Thread.currentThread().isInterrupted()) {
 				int bytesRead = -1;
 
 				if (_inputStreamServer != null) {

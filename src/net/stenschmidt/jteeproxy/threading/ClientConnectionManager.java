@@ -8,7 +8,7 @@ import java.net.Socket;
 import net.stenschmidt.jteeproxy.Destination;
 import net.stenschmidt.jteeproxy.ServerType;
 
-public class ClientConnectionThread extends Thread {
+public class ClientConnectionManager implements Runnable {
 	private Socket _clientSocket;
 	private Socket _serverSocketPrimary;
 	private Socket _serverSocketSecundary;
@@ -17,7 +17,7 @@ public class ClientConnectionThread extends Thread {
 	private Destination _primaryDestination;
 	private Destination _secunradyDestinationB;
 
-	public ClientConnectionThread(Socket clientSocket, int sourcePort, Destination primaryDestination,
+	public ClientConnectionManager(Socket clientSocket, int sourcePort, Destination primaryDestination,
 			Destination secundaryDestination) {
 		_clientSocket = clientSocket;
 		setSourcePort(sourcePort);
@@ -68,19 +68,22 @@ public class ClientConnectionThread extends Thread {
 
 		_forwardingActive = true;
 
-		Client2ServerForwardThread clientForward = new Client2ServerForwardThread(this, clientInA, serverOutA,
+		Client2ServerForwarder clientForwarder = new Client2ServerForwarder(this, clientInA, serverOutA,
 				serverOutB);
-		clientForward.start();
+		Thread clientForwardThread = new Thread(clientForwarder, clientForwarder.getClass().getName());
+		clientForwardThread.start();
 
 		// Forward Server-Response from ServerA to Client, Server-Response from ServerB
 		// will not forwared to Client
-		Server2ClientForwardThread serverForward = new Server2ClientForwardThread(this, serverInA, clientOutA,
+		Server2ClientForwarder serverForwarder = new Server2ClientForwarder(this, serverInA, clientOutA,
 				"ServerA", ServerType.PRIMARY);
-		serverForward.start();
+		Thread serverForwardThread = new Thread(serverForwarder, serverForwarder.getClass().getName() + "_Primary");
+		serverForwardThread.start();
 
-		Server2ClientForwardThread serverForwardB = new Server2ClientForwardThread(this, serverInB,
+		Server2ClientForwarder serverForwarderB = new Server2ClientForwarder(this, serverInB,
 				null /* no client-forwarding */, "ServerB", ServerType.SECONDARY);
-		serverForwardB.start();
+		Thread serverForwardThreadB = new Thread(serverForwarderB, serverForwarderB.getClass().getName() + "_Secondary");
+		serverForwardThreadB.start();
 
 		if (this.getDestinationA().isEnabled()) {
 			System.out.println(String.format("TCP Forwarding %s:%s <---> %s:%s ( PRIMARY ) started.",

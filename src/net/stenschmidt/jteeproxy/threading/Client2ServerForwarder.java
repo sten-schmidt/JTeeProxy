@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class Client2ServerForwardThread extends Thread {
+public class Client2ServerForwarder implements Runnable {
 	private static final int BUFFER_SIZE = 8192;
 	InputStream _inputStreamClient;
 	OutputStream _outputStreamPrimaryServer;
 	OutputStream _outputStreamSecondaryServer;
-	ClientConnectionThread _parent;
+	ClientConnectionManager _parent;
 
 	/**
 	 * Creates a new thread to forward the Client-InputStream to one or optional to
@@ -20,7 +20,7 @@ public class Client2ServerForwardThread extends Thread {
 	 * @param outputStreamPrimaryServer   Server-OutputStream (primary)
 	 * @param outputStreamSecondaryServer Server-OutputStream (secondary)
 	 */
-	public Client2ServerForwardThread(ClientConnectionThread parent, InputStream inputStreamClient,
+	public Client2ServerForwarder(ClientConnectionManager parent, InputStream inputStreamClient,
 			OutputStream outputStreamPrimaryServer, OutputStream outputStreamSecondaryServer) {
 		_parent = parent;
 		_inputStreamClient = inputStreamClient;
@@ -32,7 +32,7 @@ public class Client2ServerForwardThread extends Thread {
 		byte[] buffer = new byte[BUFFER_SIZE];
 
 		try {
-			while (true) {
+			while (!Thread.currentThread().isInterrupted()) {
 				int bytesRead = -1;
 
 				if (_inputStreamClient != null) {
