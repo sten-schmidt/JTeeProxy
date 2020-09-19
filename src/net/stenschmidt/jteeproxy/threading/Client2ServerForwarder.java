@@ -48,20 +48,31 @@ public class Client2ServerForwarder implements Runnable {
 
 				if (_outputStreamPrimaryServer != null)
 					_outputStreamPrimaryServer.write(buffer, 0, bytesRead);
-				if (_outputStreamSecondaryServer != null)
-					_outputStreamSecondaryServer.write(buffer, 0, bytesRead);
+
+				try {
+					if (_outputStreamSecondaryServer != null)
+						_outputStreamSecondaryServer.write(buffer, 0, bytesRead);
+				} catch (IOException e1) {
+					System.out.println(String.format(
+							"Info (Client): secondary connection is broken or was closed (%s)", e1.toString()));
+				}
 
 				if (_outputStreamPrimaryServer != null)
 					_outputStreamPrimaryServer.flush();
-				if (_outputStreamSecondaryServer != null)
-					_outputStreamSecondaryServer.flush();
+
+				try {
+					if (_outputStreamSecondaryServer != null)
+						_outputStreamSecondaryServer.flush();
+				} catch (IOException e1) {
+					System.out.println(String.format(
+							"Info (Client): secondary connection is broken or was closed (%s)", e1.toString()));
+				}
 
 			}
 		} catch (IOException e) {
-			System.out.println(String.format("Info (Client): connection is broken or was closed (%s)", e.toString()));
+			System.out.println(String.format("Info (Client): primary connection is broken or was closed (%s)", e.toString()));
 		}
-		
-		
+
 		_parent.setConnectionErrorState();
 	}
 }
