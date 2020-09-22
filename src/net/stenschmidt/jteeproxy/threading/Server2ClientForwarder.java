@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.stenschmidt.jteeproxy.ServerType;
 
 public class Server2ClientForwarder implements Runnable {
 	private static final int BUFFER_SIZE = 8192;
+	private final Logger LOGGER = LogManager.getLogger("Server2ClientForwarder");
 	InputStream _inputStreamServer;
 	OutputStream _outputStreamClient;
 	ClientConnectionManager _parent;
@@ -42,7 +46,7 @@ public class Server2ClientForwarder implements Runnable {
 					bytesRead = _inputStreamServer.read(buffer);
 					if (bytesRead > 0) {
 						String bufferInfo = (new String(buffer, 0, bytesRead)).trim();
-						System.out.println(_serverName + " response: " + bufferInfo);
+						LOGGER.info(_serverName + " response: " + bufferInfo);
 					}
 				}
 
@@ -55,7 +59,7 @@ public class Server2ClientForwarder implements Runnable {
 				}
 			}
 		} catch (IOException e) {
-			System.out.println(String.format("Info %s (%s): connection is broken or was closed (%s)", _serverName,
+			LOGGER.info(String.format("Info %s (%s): connection is broken or was closed (%s)", _serverName,
 					_serverType.toString(), e.toString()));
 		}
 

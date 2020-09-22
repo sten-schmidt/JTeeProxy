@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Client2ServerForwarder implements Runnable {
 	private static final int BUFFER_SIZE = 8192;
+	private final Logger LOGGER = LogManager.getLogger("Client2ServerForwarder");
 	InputStream _inputStreamClient;
 	OutputStream _outputStreamPrimaryServer;
 	OutputStream _outputStreamSecondaryServer;
@@ -39,7 +43,7 @@ public class Client2ServerForwarder implements Runnable {
 					bytesRead = _inputStreamClient.read(buffer);
 					if (bytesRead > 0) {
 						String bufferInfo = (new String(buffer, 0, bytesRead)).trim();
-						System.out.println("Client request: " + bufferInfo);
+						LOGGER.info("Client request: " + bufferInfo);
 					}
 				}
 
@@ -53,7 +57,7 @@ public class Client2ServerForwarder implements Runnable {
 					if (_outputStreamSecondaryServer != null)
 						_outputStreamSecondaryServer.write(buffer, 0, bytesRead);
 				} catch (IOException e1) {
-					System.out.println(String.format(
+					LOGGER.info(String.format(
 							"Info (Client): secondary connection is broken or was closed (%s)", e1.toString()));
 				}
 
@@ -64,13 +68,13 @@ public class Client2ServerForwarder implements Runnable {
 					if (_outputStreamSecondaryServer != null)
 						_outputStreamSecondaryServer.flush();
 				} catch (IOException e1) {
-					System.out.println(String.format(
+					LOGGER.info(String.format(
 							"Info (Client): secondary connection is broken or was closed (%s)", e1.toString()));
 				}
 
 			}
 		} catch (IOException e) {
-			System.out.println(String.format("Info (Client): primary connection is broken or was closed (%s)", e.toString()));
+			LOGGER.info(String.format("Info (Client): primary connection is broken or was closed (%s)", e.toString()));
 		}
 
 		_parent.setConnectionErrorState();

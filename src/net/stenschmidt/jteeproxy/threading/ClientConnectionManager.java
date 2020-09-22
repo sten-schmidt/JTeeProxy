@@ -5,10 +5,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.stenschmidt.jteeproxy.Destination;
 import net.stenschmidt.jteeproxy.ServerType;
 
 public class ClientConnectionManager implements Runnable {
+	private final Logger LOGGER = LogManager.getLogger("ClientConnectionManager");
 	private Socket _clientSocket;
 	private Socket _serverSocketPrimary;
 	private Socket _serverSocketSecundary;
@@ -68,7 +72,7 @@ public class ClientConnectionManager implements Runnable {
 			}
 
 		} catch (IOException ioe) {
-			System.err.println("Can not connect to " + this.getPrimaryDestination().getHost() + ":"
+			LOGGER.error("Can not connect to " + this.getPrimaryDestination().getHost() + ":"
 					+ this.getPrimaryDestination().getPort());
 			setConnectionErrorState();
 			return;
@@ -94,13 +98,13 @@ public class ClientConnectionManager implements Runnable {
 		_forwardingActiveSecondary = true;
 
 		if (this.getPrimaryDestination().isEnabled()) {
-			System.out.println(String.format("TCP Forwarding %s:%s <---> %s:%s ( PRIMARY ) started.",
+			LOGGER.info(String.format("TCP Forwarding %s:%s <---> %s:%s ( PRIMARY ) started.",
 					_clientSocket.getInetAddress().getHostAddress(), _clientSocket.getPort(),
 					_serverSocketPrimary.getInetAddress().getHostAddress(), _serverSocketPrimary.getPort()));
 		}
 
 		if (this.getSecondaryDestination().isEnabled()) {
-			System.out.println(String.format("TCP Forwarding %s:%s <---> %s:%s (SECONDARY) started.",
+			LOGGER.info(String.format("TCP Forwarding %s:%s <---> %s:%s (SECONDARY) started.",
 					_clientSocket.getInetAddress().getHostAddress(), _clientSocket.getPort(),
 					_serverSocketSecundary.getInetAddress().getHostAddress(), _serverSocketSecundary.getPort()));
 		}
@@ -125,7 +129,7 @@ public class ClientConnectionManager implements Runnable {
 			_forwardingActivePrimary = false;
 
 			if (this.getPrimaryDestination().isEnabled()) {
-				System.out.println(String.format("TCP Forwarding %s:%s <---> %s:%s ( PRIMARY ) stopped.",
+				LOGGER.info(String.format("TCP Forwarding %s:%s <---> %s:%s ( PRIMARY ) stopped.",
 						_clientSocket.getInetAddress().getHostAddress(), _clientSocket.getPort(),
 						_serverSocketPrimary.getInetAddress().getHostAddress(), _serverSocketPrimary.getPort()));
 			}
@@ -135,7 +139,7 @@ public class ClientConnectionManager implements Runnable {
 			_forwardingActiveSecondary = false;
 
 			if (this.getSecondaryDestination().isEnabled()) {
-				System.out.println(String.format("TCP Forwarding %s:%s <---> %s:%s (SECONDARY) stopped.",
+				LOGGER.info(String.format("TCP Forwarding %s:%s <---> %s:%s (SECONDARY) stopped.",
 						_clientSocket.getInetAddress().getHostAddress(), _clientSocket.getPort(),
 						_serverSocketSecundary.getInetAddress().getHostAddress(), _serverSocketSecundary.getPort()));
 
