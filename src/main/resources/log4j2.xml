@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn">
 	<Properties>
-		<Property name="filename">log.txt</Property>
+		<Property name="filename">logs/JTeeProxy.log</Property>
 	</Properties>
 	<Appenders>
-		<File name="File" fileName="${filename}">
+		<File name="File" fileName="${filename}" append="true">
 			<PatternLayout
-				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c{1} - %msg%n" />
+				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %c{1} - %msg%n" />
 		</File>
 		<Console name="console" target="SYSTEM_OUT">
 			<PatternLayout
-				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c{1} - %msg%n" />
+				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %c{1} - %msg%n" />
 		</Console>
 	</Appenders>
 	<Loggers>
