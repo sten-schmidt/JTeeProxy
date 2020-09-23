@@ -30,5 +30,5 @@ java -cp .\JTeeProxy.jar net.jteeproxy.testtools.EchoClient localhost 1234
 
 ## TODO / planned features
 
-** HTTPS / SSL Support
+* HTTPS / SSL Support
 * One primary server and a list of secondary servers
