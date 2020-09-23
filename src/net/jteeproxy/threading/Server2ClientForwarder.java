@@ -1,4 +1,4 @@
-package net.stenschmidt.jteeproxy.threading;
+package net.jteeproxy.threading;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.stenschmidt.jteeproxy.ServerType;
+import net.jteeproxy.ServerType;
 
 public class Server2ClientForwarder implements Runnable {
 	private static final int BUFFER_SIZE = 8192;

@@ -14,8 +14,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import net.stenschmidt.jteeproxy.*;
-import net.stenschmidt.jteeproxy.testtools.*;
+import net.jteeproxy.*;
+import net.jteeproxy.testtools.*;
 
 
 /**

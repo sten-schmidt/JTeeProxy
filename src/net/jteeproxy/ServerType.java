@@ -1,4 +1,4 @@
-package net.stenschmidt.jteeproxy;
+package net.jteeproxy;
 
 public enum ServerType {
 	PRIMARY, SECONDARY

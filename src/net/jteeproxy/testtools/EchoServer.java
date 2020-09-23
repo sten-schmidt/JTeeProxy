@@ -1,4 +1,4 @@
-package net.stenschmidt.jteeproxy.testtools;
+package net.jteeproxy.testtools;
 
 import java.io.IOException;
 import java.net.ServerSocket;

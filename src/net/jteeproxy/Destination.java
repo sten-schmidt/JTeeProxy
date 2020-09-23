@@ -1,4 +1,4 @@
-package net.stenschmidt.jteeproxy;
+package net.jteeproxy;
 
 /**
  * A Destination describes the hostname and the portnumber of an TCP endpoint.

@@ -1,4 +1,4 @@
-package net.stenschmidt.jteeproxy.threading;
+package net.jteeproxy.threading;
 
 import java.io.IOException;
 import java.io.InputStream;

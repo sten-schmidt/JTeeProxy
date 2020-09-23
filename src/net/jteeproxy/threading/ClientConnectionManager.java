@@ -1,4 +1,4 @@
-package net.stenschmidt.jteeproxy.threading;
+package net.jteeproxy.threading;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,8 +8,8 @@ import java.net.Socket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.stenschmidt.jteeproxy.Destination;
-import net.stenschmidt.jteeproxy.ServerType;
+import net.jteeproxy.Destination;
+import net.jteeproxy.ServerType;
 
 public class ClientConnectionManager implements Runnable {
 	private final Logger LOGGER = LogManager.getLogger("ClientConnectionManager");
