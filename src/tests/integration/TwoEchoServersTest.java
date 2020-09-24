@@ -100,7 +100,9 @@ class TwoEchoServersTest {
 		    };
 		    Thread t3 = new Thread(r3);
 		    t3.start();
-			
+		
+			TimeUnit.SECONDS.sleep(3); 
+
 			Runnable r4 = new Runnable() {
 				public void run() {
 					String[] args = {"localhost", "1234"};
