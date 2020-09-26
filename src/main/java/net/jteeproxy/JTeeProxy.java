@@ -36,10 +36,10 @@ public class JTeeProxy {
 		}
 		
 			
-		startServer();
+		new JTeeProxy().startServer();
 	}
 	
-	public static void startServer() throws IOException {
+	public void startServer() throws IOException {
 		LOGGER.info(String.format("JTeeProxy started with SourcePort %s", SOURCE_PORT));
 		try (ServerSocket serverSocket = new ServerSocket(SOURCE_PORT)) {
 			while (!Thread.currentThread().isInterrupted()) {
