@@ -46,7 +46,7 @@ public class Server2ClientForwarder implements Runnable {
 					bytesRead = _inputStreamServer.read(buffer);
 					if (bytesRead > 0) {
 						String bufferInfo = (new String(buffer, 0, bytesRead)).trim();
-						LOGGER.info(_serverName + " response: " + bufferInfo);
+						LOGGER.info("{} response: {}", _serverName, bufferInfo);
 					}
 				}
 
@@ -59,8 +59,8 @@ public class Server2ClientForwarder implements Runnable {
 				}
 			}
 		} catch (IOException e) {
-			LOGGER.info(String.format("Info %s (%s): connection is broken or was closed (%s)", _serverName,
-					_serverType.toString(), e.toString()));
+			LOGGER.info("Info {} ({}): connection is broken or was closed ({})", _serverName, _serverType.toString(),
+					e.toString());
 		}
 
 		if (_serverType.equals(ServerType.PRIMARY)) {

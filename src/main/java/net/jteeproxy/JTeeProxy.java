@@ -16,7 +16,7 @@ public class JTeeProxy {
 	public static int PRIMARY_DESTINATION_PORT = 0;
 	public static String SECONDARY_DESTINATION_HOST = "";
 	public static int SECONDARY_DESTINATION_PORT = 0;
-	
+
 	public static void main(String[] args) throws IOException {
 
 		if (args.length < 3) {
@@ -34,20 +34,20 @@ public class JTeeProxy {
 			SECONDARY_DESTINATION_HOST = args[3];
 			SECONDARY_DESTINATION_PORT = Integer.parseInt(args[4]);
 		}
-		
-			
+
 		new JTeeProxy().startServer();
 	}
-	
+
 	public void startServer() throws IOException {
-		LOGGER.info(String.format("JTeeProxy started with SourcePort %s", SOURCE_PORT));
+		LOGGER.info("JTeeProxy started with SourcePort {}", SOURCE_PORT);
 		try (ServerSocket serverSocket = new ServerSocket(SOURCE_PORT)) {
 			while (!Thread.currentThread().isInterrupted()) {
 				Socket clientSocket = serverSocket.accept();
 				ClientConnectionManager clientConnectionManager = new ClientConnectionManager(clientSocket, SOURCE_PORT,
 						new Destination(PRIMARY_DESTINATION_HOST, PRIMARY_DESTINATION_PORT),
 						new Destination(SECONDARY_DESTINATION_HOST, SECONDARY_DESTINATION_PORT));
-				Thread clientConnectionManagerThread = new Thread(clientConnectionManager, clientConnectionManager.getClass().getName());
+				Thread clientConnectionManagerThread = new Thread(clientConnectionManager,
+						clientConnectionManager.getClass().getName());
 				clientConnectionManagerThread.start();
 			}
 		}

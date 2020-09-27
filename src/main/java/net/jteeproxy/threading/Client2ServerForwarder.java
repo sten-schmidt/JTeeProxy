@@ -43,7 +43,7 @@ public class Client2ServerForwarder implements Runnable {
 					bytesRead = _inputStreamClient.read(buffer);
 					if (bytesRead > 0) {
 						String bufferInfo = (new String(buffer, 0, bytesRead)).trim();
-						LOGGER.info("Client request: " + bufferInfo);
+						LOGGER.info("Client request: {}", bufferInfo);
 					}
 				}
 
@@ -57,8 +57,7 @@ public class Client2ServerForwarder implements Runnable {
 					if (_outputStreamSecondaryServer != null)
 						_outputStreamSecondaryServer.write(buffer, 0, bytesRead);
 				} catch (IOException e1) {
-					LOGGER.info(String.format(
-							"Info (Client): secondary connection is broken or was closed (%s)", e1.toString()));
+					LOGGER.info("Info (Client): secondary connection is broken or was closed ({})", e1.toString());
 				}
 
 				if (_outputStreamPrimaryServer != null)
@@ -68,13 +67,12 @@ public class Client2ServerForwarder implements Runnable {
 					if (_outputStreamSecondaryServer != null)
 						_outputStreamSecondaryServer.flush();
 				} catch (IOException e1) {
-					LOGGER.info(String.format(
-							"Info (Client): secondary connection is broken or was closed (%s)", e1.toString()));
+					LOGGER.info("Info (Client): secondary connection is broken or was closed ({})", e1.toString());
 				}
 
 			}
 		} catch (IOException e) {
-			LOGGER.info(String.format("Info (Client): primary connection is broken or was closed (%s)", e.toString()));
+			LOGGER.info("Info (Client): primary connection is broken or was closed ({})", e.toString());
 		}
 
 		_parent.setConnectionErrorState();
