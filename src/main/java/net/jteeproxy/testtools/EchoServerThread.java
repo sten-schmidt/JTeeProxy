@@ -7,16 +7,21 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketAddress;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class EchoServerThread extends Thread {
+	private final Logger LOGGER = LogManager.getLogger("EchoServerTread");
 	private Socket socket;
 
 	public EchoServerThread(Socket socket) {
 		this.socket = socket;
 	}
 
+	@Override
 	public void run() {
 		SocketAddress socketAddress = socket.getRemoteSocketAddress();
-		System.out.println("Connection to " + socketAddress + " established");
+		LOGGER.info("Connection to {} established", socketAddress);
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 			out.println("Server is ready ...");
@@ -26,8 +31,10 @@ public class EchoServerThread extends Thread {
 			}
 		} catch (IOException e) {
 			System.err.println(e);
+			LOGGER.error(e.toString());
 		} finally {
-			System.out.println("Connection to " + socketAddress + " closed");
+			LOGGER.info("Connection to {} closed", socketAddress);
 		}
 	}
+	
 }

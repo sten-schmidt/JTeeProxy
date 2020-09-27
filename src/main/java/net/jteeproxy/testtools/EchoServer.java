@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class EchoServer {
+	private final Logger LOGGER = LogManager.getLogger("EchoServer");
 	private int port;
 	private int backlog;
 
@@ -15,13 +19,13 @@ public class EchoServer {
 
 	public void startServer() {
 		try (ServerSocket serverSocket = new ServerSocket(port, backlog)) {
-			System.out.println("EchoServer on " + serverSocket.getLocalSocketAddress() + " started ...");
+			LOGGER.info("EchoServer on {} started ...", serverSocket.getLocalSocketAddress());
 			while (true) {
 				Socket socket = serverSocket.accept();
 				new EchoServerThread(socket).start();
 			}
 		} catch (IOException e) {
-			System.err.println(e);
+			LOGGER.error(e.toString());
 		}
 	}
 
