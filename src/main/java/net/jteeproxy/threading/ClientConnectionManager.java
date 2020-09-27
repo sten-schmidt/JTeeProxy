@@ -130,7 +130,7 @@ public class ClientConnectionManager implements Runnable {
 
 			if (this.getPrimaryDestination().isEnabled()) {
 				LOGGER.info("TCP Forwarding {}:{} <---> {}:{} ( PRIMARY ) stopped.",
-						_clientSocket.getInetAddress().getHostAddress(), _clientSocket.getPort(),
+						_clientSocket.getInetAddress().getHostAddress(), _sourcePort,
 						_serverSocketPrimary.getInetAddress().getHostAddress(), _serverSocketPrimary.getPort());
 			}
 		}
@@ -140,7 +140,7 @@ public class ClientConnectionManager implements Runnable {
 
 			if (this.getSecondaryDestination().isEnabled()) {
 				LOGGER.info("TCP Forwarding {}:{} <---> {}:{} (SECONDARY) stopped.",
-						_clientSocket.getInetAddress().getHostAddress(), _clientSocket.getPort(),
+						_clientSocket.getInetAddress().getHostAddress(), _sourcePort,
 						_serverSocketSecundary.getInetAddress().getHostAddress(), _serverSocketSecundary.getPort());
 
 			}
