@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class EchoServer {
-	private final Logger LOGGER = LogManager.getLogger("EchoServer");
+	private final Logger logger = LogManager.getLogger("EchoServer");
 	private int port;
 	private int backlog;
 
@@ -19,13 +19,13 @@ public class EchoServer {
 
 	public void startServer() {
 		try (ServerSocket serverSocket = new ServerSocket(port, backlog)) {
-			LOGGER.info("EchoServer on {} started ...", serverSocket.getLocalSocketAddress());
-			while (true) {
+			logger.info("EchoServer on {} started ...", serverSocket.getLocalSocketAddress());
+			while (!Thread.currentThread().isInterrupted()) {
 				Socket socket = serverSocket.accept();
 				new EchoServerThread(socket).start();
 			}
 		} catch (IOException e) {
-			LOGGER.error(e.toString());
+			logger.error(e.toString());
 		}
 	}
 

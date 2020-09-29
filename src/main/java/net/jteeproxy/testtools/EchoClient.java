@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class EchoClient {
-	private static final Logger LOGGER = LogManager.getLogger("EchoClient");
+	private static final Logger logger = LogManager.getLogger("EchoClient");
 
 	public static void main(String[] args) {
 		String host = args[0];
@@ -19,17 +19,17 @@ public class EchoClient {
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 				BufferedReader input = new BufferedReader(new InputStreamReader(System.in))) {
 			String msg = in.readLine();
-			LOGGER.info(msg);
+			logger.info(msg);
 			String line;
-			while (true) {
+			while (!Thread.currentThread().isInterrupted()) {
 				line = input.readLine();
 				if (line == null || line.equals("q"))
 					break;
 				out.println(line);
-				LOGGER.info("Response from Server: {}", in.readLine());
+				logger.info("Response from Server: {}", in.readLine());
 			}
 		} catch (Exception e) {
-			LOGGER.error(e.toString());
+			logger.error(e.toString());
 		}
 	}
 
