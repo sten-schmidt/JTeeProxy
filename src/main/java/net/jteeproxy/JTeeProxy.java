@@ -11,11 +11,11 @@ import net.jteeproxy.threading.ClientConnectionManager;
 
 public class JTeeProxy {
 	private static final Logger LOGGER = LogManager.getLogger("JTeeProxy");
-	public static int SOURCE_PORT = 0;
-	public static String PRIMARY_DESTINATION_HOST = "";
-	public static int PRIMARY_DESTINATION_PORT = 0;
-	public static String SECONDARY_DESTINATION_HOST = "";
-	public static int SECONDARY_DESTINATION_PORT = 0;
+	public static int sourcePort = 0;
+	public static String primaryDestinationHost = "";
+	public static int primaryDestinationPort = 0;
+	public static String secondaryDestinationHost = "";
+	public static int secondaryDestinationPort = 0;
 
 	public static void main(String[] args) throws IOException {
 
@@ -26,26 +26,26 @@ public class JTeeProxy {
 			System.exit(1);
 		}
 
-		SOURCE_PORT = Integer.parseInt(args[0]);
-		PRIMARY_DESTINATION_HOST = args[1];
-		PRIMARY_DESTINATION_PORT = Integer.parseInt(args[2]);
+		sourcePort = Integer.parseInt(args[0]);
+		primaryDestinationHost = args[1];
+		primaryDestinationPort = Integer.parseInt(args[2]);
 
 		if (args.length == 5) {
-			SECONDARY_DESTINATION_HOST = args[3];
-			SECONDARY_DESTINATION_PORT = Integer.parseInt(args[4]);
+			secondaryDestinationHost = args[3];
+			secondaryDestinationPort = Integer.parseInt(args[4]);
 		}
 
 		new JTeeProxy().startServer();
 	}
 
 	public void startServer() throws IOException {
-		LOGGER.info("JTeeProxy started with SourcePort {}", SOURCE_PORT);
-		try (ServerSocket serverSocket = new ServerSocket(SOURCE_PORT)) {
+		LOGGER.info("JTeeProxy started with SourcePort {}", sourcePort);
+		try (ServerSocket serverSocket = new ServerSocket(sourcePort)) {
 			while (!Thread.currentThread().isInterrupted()) {
 				Socket clientSocket = serverSocket.accept();
-				ClientConnectionManager clientConnectionManager = new ClientConnectionManager(clientSocket, SOURCE_PORT,
-						new Destination(PRIMARY_DESTINATION_HOST, PRIMARY_DESTINATION_PORT),
-						new Destination(SECONDARY_DESTINATION_HOST, SECONDARY_DESTINATION_PORT));
+				ClientConnectionManager clientConnectionManager = new ClientConnectionManager(clientSocket, sourcePort,
+						new Destination(primaryDestinationHost, primaryDestinationPort),
+						new Destination(secondaryDestinationHost, secondaryDestinationPort));
 				Thread clientConnectionManagerThread = new Thread(clientConnectionManager,
 						clientConnectionManager.getClass().getName());
 				clientConnectionManagerThread.start();

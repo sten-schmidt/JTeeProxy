@@ -11,28 +11,30 @@ import net.jteeproxy.ServerType;
 
 public class Server2ClientForwarder implements Runnable {
 	private static final int BUFFER_SIZE = 8192;
-	private final Logger LOGGER = LogManager.getLogger("Server2ClientForwarder");
-	InputStream _inputStreamServer;
-	OutputStream _outputStreamClient;
-	ClientConnectionManager _parent;
-	String _serverName;
-	ServerType _serverType;
+	private final Logger logger = LogManager.getLogger("Server2ClientForwarder");
+	private InputStream inputStreamServer;
+	private OutputStream outputStreamClient;
+	private ClientConnectionManager clientConnectionManager;
+	private String serverName;
+	private ServerType serverType;
 
 	/**
 	 * Creates a new thread to forward the response from ServerA to Client, response
 	 * form ServerB will not forward to Client
 	 * 
 	 * @param parent
-	 * @param inputStreamServer  Response-Stream form Server (primary)
-	 * @param outputStreamClient Client-OutputStream
+	 * @param inputStreamServer
+	 * @param outputStreamClient
+	 * @param serverName
+	 * @param serverType
 	 */
 	public Server2ClientForwarder(ClientConnectionManager parent, InputStream inputStreamServer,
 			OutputStream outputStreamClient, String serverName, ServerType serverType) {
-		_parent = parent;
-		_inputStreamServer = inputStreamServer;
-		_outputStreamClient = outputStreamClient;
-		_serverName = serverName;
-		_serverType = serverType;
+		this.clientConnectionManager = parent;
+		this.inputStreamServer = inputStreamServer;
+		this.outputStreamClient = outputStreamClient;
+		this.serverName = serverName;
+		this.serverType = serverType;
 	}
 
 	public void run() {
@@ -42,29 +44,29 @@ public class Server2ClientForwarder implements Runnable {
 			while (!Thread.currentThread().isInterrupted()) {
 				int bytesRead = -1;
 
-				if (_inputStreamServer != null) {
-					bytesRead = _inputStreamServer.read(buffer);
+				if (inputStreamServer != null) {
+					bytesRead = inputStreamServer.read(buffer);
 					if (bytesRead > 0) {
 						String bufferInfo = (new String(buffer, 0, bytesRead)).trim();
-						LOGGER.info("{} response: {}", _serverName, bufferInfo);
+						logger.info("{} response: {}", serverName, bufferInfo);
 					}
 				}
 
 				if (bytesRead == -1)
 					break;
 
-				if (_outputStreamClient != null) {
-					_outputStreamClient.write(buffer, 0, bytesRead);
-					_outputStreamClient.flush();
+				if (outputStreamClient != null) {
+					outputStreamClient.write(buffer, 0, bytesRead);
+					outputStreamClient.flush();
 				}
 			}
 		} catch (IOException e) {
-			LOGGER.info("Info {} ({}): connection is broken or was closed ({})", _serverName, _serverType.toString(),
+			logger.info("Info {} ({}): connection is broken or was closed ({})", serverName, serverType.toString(),
 					e.toString());
 		}
 
-		if (_serverType.equals(ServerType.PRIMARY)) {
-			_parent.setConnectionErrorState();
+		if (serverType.equals(ServerType.PRIMARY)) {
+			clientConnectionManager.setConnectionErrorState();
 		}
 	}
 

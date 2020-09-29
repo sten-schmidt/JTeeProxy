@@ -84,11 +84,11 @@ class TwoEchoServersTest {
 				JTeeProxy proxy = new JTeeProxy();
 
 				public void run() {
-					JTeeProxy.SOURCE_PORT = SOURCE_PORT;
-					JTeeProxy.PRIMARY_DESTINATION_HOST = PRIMARY_DESTINATION_HOST;
-					JTeeProxy.PRIMARY_DESTINATION_PORT = PRIMARY_DESTINATION_PORT;
-					JTeeProxy.SECONDARY_DESTINATION_HOST = SECONDARY_DESTINATION_HOST;
-					JTeeProxy.SECONDARY_DESTINATION_PORT = SECONDARY_DESTINATION_PORT;
+					JTeeProxy.sourcePort = SOURCE_PORT;
+					JTeeProxy.primaryDestinationHost = PRIMARY_DESTINATION_HOST;
+					JTeeProxy.primaryDestinationPort = PRIMARY_DESTINATION_PORT;
+					JTeeProxy.secondaryDestinationHost = SECONDARY_DESTINATION_HOST;
+					JTeeProxy.secondaryDestinationPort = SECONDARY_DESTINATION_PORT;
 					try {
 						proxy.startServer();
 					} catch (IOException e) {

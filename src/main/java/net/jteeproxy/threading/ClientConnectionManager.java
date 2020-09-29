@@ -12,25 +12,25 @@ import net.jteeproxy.Destination;
 import net.jteeproxy.ServerType;
 
 public class ClientConnectionManager implements Runnable {
-	private final Logger LOGGER = LogManager.getLogger("ClientConnectionManager");
-	private Socket _clientSocket;
-	private Socket _serverSocketPrimary;
-	private Socket _serverSocketSecundary;
-	private boolean _forwardingActivePrimary = false;
-	private boolean _forwardingActiveSecondary = false;
-	private int _sourcePort;
-	private Destination _primaryDestination;
-	private Destination _secundaryDestination;
-	private Client2ServerForwarder _clientForwarder;
-	private Thread _clientForwardThread;
-	private Server2ClientForwarder _primaryServerForwarder;
-	private Thread _primaryServerForwardThread;
-	private Server2ClientForwarder _secondaryServerForwarder;
-	private Thread _secondaryServerForwardThread;
+	private final Logger logger = LogManager.getLogger("ClientConnectionManager");
+	private Socket clientSocket;
+	private Socket serverSocketPrimary;
+	private Socket serverSocketSecundary;
+	private boolean forwardingActivePrimary = false;
+	private boolean forwardingActiveSecondary = false;
+	private int sourcePort;
+	private Destination primaryDestination;
+	private Destination secundaryDestination;
+	private Client2ServerForwarder clientForwarder;
+	private Thread clientForwardThread;
+	private Server2ClientForwarder primaryServerForwarder;
+	private Thread primaryServerForwardThread;
+	private Server2ClientForwarder secondaryServerForwarder;
+	private Thread secondaryServerForwardThread;
 
 	public ClientConnectionManager(Socket clientSocket, int sourcePort, Destination primaryDestination,
 			Destination secundaryDestination) {
-		_clientSocket = clientSocket;
+		setClientSocket(clientSocket);
 		setSourcePort(sourcePort);
 		setPrimaryDestination(primaryDestination);
 		setSecundaryDestination(secundaryDestination);
@@ -47,136 +47,144 @@ public class ClientConnectionManager implements Runnable {
 
 			if (this.getPrimaryDestination().isEnabled()) {
 
-				_serverSocketPrimary = new Socket(this.getPrimaryDestination().getHost(),
+				serverSocketPrimary = new Socket(this.getPrimaryDestination().getHost(),
 						this.getPrimaryDestination().getPort());
-				_serverSocketPrimary.setKeepAlive(true);
+				serverSocketPrimary.setKeepAlive(true);
 
 				if (this.getSecondaryDestination().isEnabled()) {
-					_serverSocketSecundary = new Socket(this.getSecondaryDestination().getHost(),
+					serverSocketSecundary = new Socket(this.getSecondaryDestination().getHost(),
 							this.getSecondaryDestination().getPort());
-					_serverSocketSecundary.setKeepAlive(true);
+					serverSocketSecundary.setKeepAlive(true);
 				}
 
-				_clientSocket.setKeepAlive(true);
+				clientSocket.setKeepAlive(true);
 
-				primaryInputStreamClient = _clientSocket.getInputStream();
-				primaryOutputStreamClient = _clientSocket.getOutputStream();
+				primaryInputStreamClient = clientSocket.getInputStream();
+				primaryOutputStreamClient = clientSocket.getOutputStream();
 
-				primaryInputStreamServer = _serverSocketPrimary.getInputStream();
-				primaryOutputStreamServer = _serverSocketPrimary.getOutputStream();
+				primaryInputStreamServer = serverSocketPrimary.getInputStream();
+				primaryOutputStreamServer = serverSocketPrimary.getOutputStream();
 
 				if (this.getSecondaryDestination().isEnabled()) {
-					secondaryInputStreamServer = _serverSocketSecundary.getInputStream();
-					secondaryOutputStreamServer = _serverSocketSecundary.getOutputStream();
+					secondaryInputStreamServer = serverSocketSecundary.getInputStream();
+					secondaryOutputStreamServer = serverSocketSecundary.getOutputStream();
 				}
 			}
 
 		} catch (IOException ioe) {
-			LOGGER.error("Can not connect to {}:{}", this.getPrimaryDestination().getHost(),
+			logger.error("Can not connect to {}:{}", this.getPrimaryDestination().getHost(),
 					this.getPrimaryDestination().getPort());
 			setConnectionErrorState();
 			return;
 		}
 
-		_clientForwarder = new Client2ServerForwarder(this, primaryInputStreamClient, primaryOutputStreamServer,
+		clientForwarder = new Client2ServerForwarder(this, primaryInputStreamClient, primaryOutputStreamServer,
 				secondaryOutputStreamServer);
-		_clientForwardThread = new Thread(_clientForwarder, _clientForwarder.getClass().getName());
-		_clientForwardThread.start();
+		clientForwardThread = new Thread(clientForwarder, clientForwarder.getClass().getName());
+		clientForwardThread.start();
 
-		_primaryServerForwarder = new Server2ClientForwarder(this, primaryInputStreamServer, primaryOutputStreamClient,
+		primaryServerForwarder = new Server2ClientForwarder(this, primaryInputStreamServer, primaryOutputStreamClient,
 				"ServerA", ServerType.PRIMARY);
-		_primaryServerForwardThread = new Thread(_primaryServerForwarder,
-				_primaryServerForwarder.getClass().getName() + "_Primary");
-		_primaryServerForwardThread.start();
-		_forwardingActivePrimary = true;
+		primaryServerForwardThread = new Thread(primaryServerForwarder,
+				primaryServerForwarder.getClass().getName() + "_Primary");
+		primaryServerForwardThread.start();
+		forwardingActivePrimary = true;
 
-		_secondaryServerForwarder = new Server2ClientForwarder(this, secondaryInputStreamServer,
+		secondaryServerForwarder = new Server2ClientForwarder(this, secondaryInputStreamServer,
 				null /* no client-forwarding */, "ServerB", ServerType.SECONDARY);
-		_secondaryServerForwardThread = new Thread(_secondaryServerForwarder,
-				_secondaryServerForwarder.getClass().getName() + "_Secondary");
-		_secondaryServerForwardThread.start();
-		_forwardingActiveSecondary = true;
+		secondaryServerForwardThread = new Thread(secondaryServerForwarder,
+				secondaryServerForwarder.getClass().getName() + "_Secondary");
+		secondaryServerForwardThread.start();
+		forwardingActiveSecondary = true;
 
 		if (this.getPrimaryDestination().isEnabled()) {
-			LOGGER.info("TCP Forwarding {}:{} <---> {}:{} ( PRIMARY ) started.",
-					_clientSocket.getInetAddress().getHostAddress(), _clientSocket.getPort(),
-					_serverSocketPrimary.getInetAddress().getHostAddress(), _serverSocketPrimary.getPort());
+			logger.info("TCP Forwarding {}:{} <---> {}:{} ( PRIMARY ) started.",
+					clientSocket.getInetAddress().getHostAddress(), clientSocket.getPort(),
+					serverSocketPrimary.getInetAddress().getHostAddress(), serverSocketPrimary.getPort());
 		}
 
 		if (this.getSecondaryDestination().isEnabled()) {
-			LOGGER.info("TCP Forwarding {}:{} <---> {}:{} (SECONDARY) started.",
-					_clientSocket.getInetAddress().getHostAddress(), _clientSocket.getPort(),
-					_serverSocketSecundary.getInetAddress().getHostAddress(), _serverSocketSecundary.getPort());
+			logger.info("TCP Forwarding {}:{} <---> {}:{} (SECONDARY) started.",
+					clientSocket.getInetAddress().getHostAddress(), clientSocket.getPort(),
+					serverSocketSecundary.getInetAddress().getHostAddress(), serverSocketSecundary.getPort());
 		}
 	}
 
 	public synchronized void setConnectionErrorState() {
 		try {
-			if (_serverSocketPrimary != null)
-				_serverSocketPrimary.close();
-			if (_serverSocketSecundary != null)
-				_serverSocketSecundary.close();
+			if (serverSocketPrimary != null)
+				serverSocketPrimary.close();
+			if (serverSocketSecundary != null)
+				serverSocketSecundary.close();
 		} catch (Exception e) {
 		}
 		try {
-			if (_serverSocketPrimary != null)
-				_serverSocketPrimary.close();
-			if (_serverSocketSecundary != null)
-				_serverSocketSecundary.close();
+			if (serverSocketPrimary != null)
+				serverSocketPrimary.close();
+			if (serverSocketSecundary != null)
+				serverSocketSecundary.close();
 		} catch (Exception e) {
 		}
-		if (_forwardingActivePrimary) {
-			_forwardingActivePrimary = false;
+		if (forwardingActivePrimary) {
+			forwardingActivePrimary = false;
 
 			if (this.getPrimaryDestination().isEnabled()) {
-				LOGGER.info("TCP Forwarding {}:{} <---> {}:{} ( PRIMARY ) stopped.",
-						_clientSocket.getInetAddress().getHostAddress(), _sourcePort,
-						_serverSocketPrimary.getInetAddress().getHostAddress(), _serverSocketPrimary.getPort());
+				logger.info("TCP Forwarding {}:{} <---> {}:{} ( PRIMARY ) stopped.",
+						clientSocket.getInetAddress().getHostAddress(), sourcePort,
+						serverSocketPrimary.getInetAddress().getHostAddress(), serverSocketPrimary.getPort());
 			}
 		}
 
-		if (_forwardingActiveSecondary) {
-			_forwardingActiveSecondary = false;
+		if (forwardingActiveSecondary) {
+			forwardingActiveSecondary = false;
 
 			if (this.getSecondaryDestination().isEnabled()) {
-				LOGGER.info("TCP Forwarding {}:{} <---> {}:{} (SECONDARY) stopped.",
-						_clientSocket.getInetAddress().getHostAddress(), _sourcePort,
-						_serverSocketSecundary.getInetAddress().getHostAddress(), _serverSocketSecundary.getPort());
+				logger.info("TCP Forwarding {}:{} <---> {}:{} (SECONDARY) stopped.",
+						clientSocket.getInetAddress().getHostAddress(), sourcePort,
+						serverSocketSecundary.getInetAddress().getHostAddress(), serverSocketSecundary.getPort());
 
 			}
 		}
 	}
 
 	public int getSourcePort() {
-		return _sourcePort;
+		return sourcePort;
 	}
 
 	public void setSourcePort(int sourcePort) {
-		this._sourcePort = sourcePort;
+		this.sourcePort = sourcePort;
 	}
 
 	public Destination getPrimaryDestination() {
-		return _primaryDestination;
+		return primaryDestination;
 	}
 
 	public void setPrimaryDestination(Destination destination) {
-		this._primaryDestination = destination;
+		this.primaryDestination = destination;
 	}
 
 	public Destination getSecondaryDestination() {
-		return _secundaryDestination;
+		return secundaryDestination;
 	}
 
 	public void setSecundaryDestination(Destination destination) {
-		this._secundaryDestination = destination;
+		this.secundaryDestination = destination;
 	}
 
 	public Socket getSecondaryServerSocket() {
-		return _serverSocketSecundary;
+		return serverSocketSecundary;
 	}
 
 	public void setSecondaryServerSocket(Socket serverSocket) {
-		this._serverSocketSecundary = serverSocket;
+		this.serverSocketSecundary = serverSocket;
+	}
+
+	public Socket getClientSocket() {
+		return clientSocket;
+	}
+
+	public void setClientSocket(Socket clientSocket) {
+		this.clientSocket = clientSocket;
 	}
 
 }

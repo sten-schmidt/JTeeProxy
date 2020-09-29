@@ -9,11 +9,11 @@ import org.apache.logging.log4j.Logger;
 
 public class Client2ServerForwarder implements Runnable {
 	private static final int BUFFER_SIZE = 8192;
-	private final Logger LOGGER = LogManager.getLogger("Client2ServerForwarder");
-	InputStream _inputStreamClient;
-	OutputStream _outputStreamPrimaryServer;
-	OutputStream _outputStreamSecondaryServer;
-	ClientConnectionManager _parent;
+	private final Logger logger = LogManager.getLogger("Client2ServerForwarder");
+	private InputStream inputStreamClient;
+	private OutputStream outputStreamPrimaryServer;
+	private OutputStream outputStreamSecondaryServer;
+	private ClientConnectionManager clientConnectionManager;
 
 	/**
 	 * Creates a new thread to forward the Client-InputStream to one or optional to
@@ -26,10 +26,10 @@ public class Client2ServerForwarder implements Runnable {
 	 */
 	public Client2ServerForwarder(ClientConnectionManager parent, InputStream inputStreamClient,
 			OutputStream outputStreamPrimaryServer, OutputStream outputStreamSecondaryServer) {
-		_parent = parent;
-		_inputStreamClient = inputStreamClient;
-		_outputStreamPrimaryServer = outputStreamPrimaryServer;
-		_outputStreamSecondaryServer = outputStreamSecondaryServer;
+		this.clientConnectionManager = parent;
+		this.inputStreamClient = inputStreamClient;
+		this.outputStreamPrimaryServer = outputStreamPrimaryServer;
+		this.outputStreamSecondaryServer = outputStreamSecondaryServer;
 	}
 
 	public void run() {
@@ -39,42 +39,42 @@ public class Client2ServerForwarder implements Runnable {
 			while (!Thread.currentThread().isInterrupted()) {
 				int bytesRead = -1;
 
-				if (_inputStreamClient != null) {
-					bytesRead = _inputStreamClient.read(buffer);
+				if (inputStreamClient != null) {
+					bytesRead = inputStreamClient.read(buffer);
 					if (bytesRead > 0) {
 						String bufferInfo = (new String(buffer, 0, bytesRead)).trim();
-						LOGGER.info("Client request: {}", bufferInfo);
+						logger.info("Client request: {}", bufferInfo);
 					}
 				}
 
 				if (bytesRead == -1)
 					break;
 
-				if (_outputStreamPrimaryServer != null)
-					_outputStreamPrimaryServer.write(buffer, 0, bytesRead);
+				if (outputStreamPrimaryServer != null)
+					outputStreamPrimaryServer.write(buffer, 0, bytesRead);
 
 				try {
-					if (_outputStreamSecondaryServer != null)
-						_outputStreamSecondaryServer.write(buffer, 0, bytesRead);
+					if (outputStreamSecondaryServer != null)
+						outputStreamSecondaryServer.write(buffer, 0, bytesRead);
 				} catch (IOException e1) {
-					LOGGER.info("Info (Client): secondary connection is broken or was closed ({})", e1.toString());
+					logger.info("Info (Client): secondary connection is broken or was closed ({})", e1.toString());
 				}
 
-				if (_outputStreamPrimaryServer != null)
-					_outputStreamPrimaryServer.flush();
+				if (outputStreamPrimaryServer != null)
+					outputStreamPrimaryServer.flush();
 
 				try {
-					if (_outputStreamSecondaryServer != null)
-						_outputStreamSecondaryServer.flush();
+					if (outputStreamSecondaryServer != null)
+						outputStreamSecondaryServer.flush();
 				} catch (IOException e1) {
-					LOGGER.info("Info (Client): secondary connection is broken or was closed ({})", e1.toString());
+					logger.info("Info (Client): secondary connection is broken or was closed ({})", e1.toString());
 				}
 
 			}
 		} catch (IOException e) {
-			LOGGER.info("Info (Client): primary connection is broken or was closed ({})", e.toString());
+			logger.info("Info (Client): primary connection is broken or was closed ({})", e.toString());
 		}
 
-		_parent.setConnectionErrorState();
+		clientConnectionManager.setConnectionErrorState();
 	}
 }
