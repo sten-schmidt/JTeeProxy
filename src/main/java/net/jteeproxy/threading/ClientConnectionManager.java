@@ -15,7 +15,7 @@ public class ClientConnectionManager implements Runnable {
 	private final Logger logger = LogManager.getLogger("ClientConnectionManager");
 	private Socket clientSocket;
 	private Socket serverSocketPrimary;
-	private Socket serverSocketSecundary;
+	private Socket serverSocketSecondary;
 	private boolean forwardingActivePrimary = false;
 	private boolean forwardingActiveSecondary = false;
 	private int sourcePort;
@@ -52,9 +52,9 @@ public class ClientConnectionManager implements Runnable {
 				serverSocketPrimary.setKeepAlive(true);
 
 				if (this.getSecondaryDestination().isEnabled()) {
-					serverSocketSecundary = new Socket(this.getSecondaryDestination().getHost(),
+					serverSocketSecondary = new Socket(this.getSecondaryDestination().getHost(),
 							this.getSecondaryDestination().getPort());
-					serverSocketSecundary.setKeepAlive(true);
+					serverSocketSecondary.setKeepAlive(true);
 				}
 
 				clientSocket.setKeepAlive(true);
@@ -66,8 +66,8 @@ public class ClientConnectionManager implements Runnable {
 				primaryOutputStreamServer = serverSocketPrimary.getOutputStream();
 
 				if (this.getSecondaryDestination().isEnabled()) {
-					secondaryInputStreamServer = serverSocketSecundary.getInputStream();
-					secondaryOutputStreamServer = serverSocketSecundary.getOutputStream();
+					secondaryInputStreamServer = serverSocketSecondary.getInputStream();
+					secondaryOutputStreamServer = serverSocketSecondary.getOutputStream();
 				}
 			}
 
@@ -97,16 +97,22 @@ public class ClientConnectionManager implements Runnable {
 		secondaryServerForwardThread.start();
 		forwardingActiveSecondary = true;
 
-		if (this.getPrimaryDestination().isEnabled()) {
-			logger.info("TCP Forwarding {}:{} <---> {}:{} ( PRIMARY ) started.",
-					clientSocket.getInetAddress().getHostAddress(), clientSocket.getPort(),
-					serverSocketPrimary.getInetAddress().getHostAddress(), serverSocketPrimary.getPort());
-		}
+		logActionPrimary("started");
 
+		logActionSecondary("started");
+	}
+
+	private void logActionPrimary(String startOrStopDesc) {
+		if (this.getPrimaryDestination().isEnabled()) {
+			logger.info("TCP Forwarding {} <---> {} ( PRIMARY ) {}.", clientSocket.getLocalSocketAddress(),
+					serverSocketPrimary.getRemoteSocketAddress(), startOrStopDesc);
+		}
+	}
+
+	private void logActionSecondary(String startOrStopDesc) {
 		if (this.getSecondaryDestination().isEnabled()) {
-			logger.info("TCP Forwarding {}:{} <---> {}:{} (SECONDARY) started.",
-					clientSocket.getInetAddress().getHostAddress(), clientSocket.getPort(),
-					serverSocketSecundary.getInetAddress().getHostAddress(), serverSocketSecundary.getPort());
+			logger.info("TCP Forwarding {} <---> {} (SECONDARY) {}.", clientSocket.getLocalSocketAddress(),
+					serverSocketSecondary.getRemoteSocketAddress(), startOrStopDesc);
 		}
 	}
 
@@ -114,24 +120,20 @@ public class ClientConnectionManager implements Runnable {
 		try {
 			if (serverSocketPrimary != null)
 				serverSocketPrimary.close();
-			if (serverSocketSecundary != null)
-				serverSocketSecundary.close();
 		} catch (Exception e) {
+			// Nothing to do here...
 		}
 		try {
-			if (serverSocketPrimary != null)
-				serverSocketPrimary.close();
-			if (serverSocketSecundary != null)
-				serverSocketSecundary.close();
+			if (serverSocketSecondary != null)
+				serverSocketSecondary.close();
 		} catch (Exception e) {
+			// Nothing to do here...
 		}
 		if (forwardingActivePrimary) {
 			forwardingActivePrimary = false;
 
 			if (this.getPrimaryDestination().isEnabled()) {
-				logger.info("TCP Forwarding {}:{} <---> {}:{} ( PRIMARY ) stopped.",
-						clientSocket.getInetAddress().getHostAddress(), sourcePort,
-						serverSocketPrimary.getInetAddress().getHostAddress(), serverSocketPrimary.getPort());
+				logActionPrimary("stopped");
 			}
 		}
 
@@ -139,10 +141,7 @@ public class ClientConnectionManager implements Runnable {
 			forwardingActiveSecondary = false;
 
 			if (this.getSecondaryDestination().isEnabled()) {
-				logger.info("TCP Forwarding {}:{} <---> {}:{} (SECONDARY) stopped.",
-						clientSocket.getInetAddress().getHostAddress(), sourcePort,
-						serverSocketSecundary.getInetAddress().getHostAddress(), serverSocketSecundary.getPort());
-
+				logActionSecondary("stopped");
 			}
 		}
 	}
@@ -172,11 +171,11 @@ public class ClientConnectionManager implements Runnable {
 	}
 
 	public Socket getSecondaryServerSocket() {
-		return serverSocketSecundary;
+		return serverSocketSecondary;
 	}
 
 	public void setSecondaryServerSocket(Socket serverSocket) {
-		this.serverSocketSecundary = serverSocket;
+		this.serverSocketSecondary = serverSocket;
 	}
 
 	public Socket getClientSocket() {

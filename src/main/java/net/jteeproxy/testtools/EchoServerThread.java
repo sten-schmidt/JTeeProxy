@@ -20,8 +20,9 @@ public class EchoServerThread extends Thread {
 
 	@Override
 	public void run() {
-		SocketAddress socketAddress = socket.getRemoteSocketAddress();
-		logger.info("Connection to {} established", socketAddress);
+		SocketAddress localSocketAddress = socket.getLocalSocketAddress();
+		SocketAddress remoteSocketAddress = socket.getRemoteSocketAddress();
+		logger.info("Connection to {} from {} established", localSocketAddress, remoteSocketAddress);
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 			out.println("Server is ready ...");
@@ -32,7 +33,7 @@ public class EchoServerThread extends Thread {
 		} catch (IOException e) {
 			logger.error(e.toString());
 		} finally {
-			logger.info("Connection to {} closed", socketAddress);
+			logger.info("Connection to {} from {} closed", localSocketAddress, remoteSocketAddress);
 		}
 	}
 	
