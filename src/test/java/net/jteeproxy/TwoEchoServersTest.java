@@ -70,6 +70,8 @@ class TwoEchoServersTest {
 			};
 			Thread t1 = new Thread(r1);
 			t1.start();
+			
+			TimeUnit.SECONDS.sleep(1);
 
 			Runnable r2 = new Runnable() {
 				public void run() {
@@ -80,6 +82,8 @@ class TwoEchoServersTest {
 			Thread t2 = new Thread(r2);
 			t2.start();
 
+			TimeUnit.SECONDS.sleep(1);
+			
 			Runnable r3 = new Runnable() {
 				JTeeProxy proxy = new JTeeProxy();
 
@@ -120,11 +124,11 @@ class TwoEchoServersTest {
 			assertEquals(true, t2.isAlive());
 			assertEquals(true, t3.isAlive());
 
-			System.out.println("start interrupt...");
-			t1.interrupt();
-			t2.interrupt();
-			t3.interrupt();
-			t4.interrupt();
+			//TODO: refactor
+			t1.stop();
+			t2.stop();
+			t3.stop();
+			t4.stop();
 
 		} catch (Exception e) {
 			fail(e.toString());
