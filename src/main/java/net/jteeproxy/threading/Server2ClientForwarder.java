@@ -55,18 +55,21 @@ public class Server2ClientForwarder implements Runnable {
 				if (bytesRead == -1)
 					break;
 
-				if (outputStreamClient != null) {
-					outputStreamClient.write(buffer, 0, bytesRead);
-					outputStreamClient.flush();
-				}
+				writeAndFlush(buffer, bytesRead);
 			}
 		} catch (IOException e) {
-			logger.info("Info {} ({}): connection is broken or was closed ({})", serverName, serverType.toString(),
-					e.toString());
+			logger.info("Info {} ({}): connection is broken or was closed ({})", serverName, serverType, e.toString());
 		}
 
 		if (serverType.equals(ServerType.PRIMARY)) {
 			clientConnectionManager.setConnectionErrorState();
+		}
+	}
+
+	private void writeAndFlush(byte[] buffer, int bytesRead) throws IOException {
+		if (outputStreamClient != null) {
+			outputStreamClient.write(buffer, 0, bytesRead);
+			outputStreamClient.flush();
 		}
 	}
 

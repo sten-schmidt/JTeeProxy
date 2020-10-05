@@ -11,11 +11,11 @@ import net.jteeproxy.threading.ClientConnectionManager;
 
 public class JTeeProxy {
 	private static final Logger LOGGER = LogManager.getLogger("JTeeProxy");
-	public static int sourcePort = 0;
-	public static String primaryDestinationHost = "";
-	public static int primaryDestinationPort = 0;
-	public static String secondaryDestinationHost = "";
-	public static int secondaryDestinationPort = 0;
+	private static int sourcePort = 0;
+	private static String primaryDestinationHost = "";
+	private static int primaryDestinationPort = 0;
+	private static String secondaryDestinationHost = "";
+	private static int secondaryDestinationPort = 0;
 
 	public static void main(String[] args) throws IOException {
 
@@ -52,4 +52,45 @@ public class JTeeProxy {
 			}
 		}
 	}
+
+	public static int getSourcePort() {
+		return sourcePort;
+	}
+
+	public static void setSourcePort(int sourcePort) {
+		JTeeProxy.sourcePort = sourcePort;
+	}
+
+	public static String getPrimaryDestinationHost() {
+		return primaryDestinationHost;
+	}
+
+	public static void setPrimaryDestinationHost(String primaryDestinationHost) {
+		JTeeProxy.primaryDestinationHost = primaryDestinationHost;
+	}
+
+	public static int getPrimaryDestinationPort() {
+		return primaryDestinationPort;
+	}
+
+	public static void setPrimaryDestinationPort(int primaryDestinationPort) {
+		JTeeProxy.primaryDestinationPort = primaryDestinationPort;
+	}
+
+	public static String getSecondaryDestinationHost() {
+		return secondaryDestinationHost;
+	}
+
+	public static void setSecondaryDestinationHost(String secondaryDestinationHost) {
+		JTeeProxy.secondaryDestinationHost = secondaryDestinationHost;
+	}
+
+	public static int getSecondaryDestinationPort() {
+		return secondaryDestinationPort;
+	}
+
+	public static void setSecondaryDestinationPort(int secondaryDestinationPort) {
+		JTeeProxy.secondaryDestinationPort = secondaryDestinationPort;
+	}
+
 }

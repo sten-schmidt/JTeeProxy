@@ -50,31 +50,43 @@ public class Client2ServerForwarder implements Runnable {
 				if (bytesRead == -1)
 					break;
 
-				if (outputStreamPrimaryServer != null)
-					outputStreamPrimaryServer.write(buffer, 0, bytesRead);
-
-				try {
-					if (outputStreamSecondaryServer != null)
-						outputStreamSecondaryServer.write(buffer, 0, bytesRead);
-				} catch (IOException e1) {
-					logger.info("Info (Client): secondary connection is broken or was closed ({})", e1.toString());
-				}
-
-				if (outputStreamPrimaryServer != null)
-					outputStreamPrimaryServer.flush();
-
-				try {
-					if (outputStreamSecondaryServer != null)
-						outputStreamSecondaryServer.flush();
-				} catch (IOException e1) {
-					logger.info("Info (Client): secondary connection is broken or was closed ({})", e1.toString());
-				}
-
+				writeToPrimaryServer(buffer, bytesRead);
+				tryWriteToSecondaryServer(buffer, bytesRead);
+				flushPrimaryServer();
+				tryFlushSecondaryServer();
 			}
 		} catch (IOException e) {
 			logger.info("Info (Client): primary connection is broken or was closed ({})", e.toString());
 		}
 
 		clientConnectionManager.setConnectionErrorState();
+	}
+
+	private void writeToPrimaryServer(byte[] buffer, int bytesRead) throws IOException {
+		if (outputStreamPrimaryServer != null)
+			outputStreamPrimaryServer.write(buffer, 0, bytesRead);
+	}
+
+	private void flushPrimaryServer() throws IOException {
+		if (outputStreamPrimaryServer != null)
+			outputStreamPrimaryServer.flush();
+	}
+
+	private void tryFlushSecondaryServer() {
+		try {
+			if (outputStreamSecondaryServer != null)
+				outputStreamSecondaryServer.flush();
+		} catch (IOException e1) {
+			logger.info("Info (Client): secondary connection is broken or was closed ({})", e1.toString());
+		}
+	}
+
+	private void tryWriteToSecondaryServer(byte[] buffer, int bytesRead) {
+		try {
+			if (outputStreamSecondaryServer != null)
+				outputStreamSecondaryServer.write(buffer, 0, bytesRead);
+		} catch (IOException e1) {
+			logger.info("Info (Client): secondary connection is broken or was closed ({})", e1.toString());
+		}
 	}
 }
